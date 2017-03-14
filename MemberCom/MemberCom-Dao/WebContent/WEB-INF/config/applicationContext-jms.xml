@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<description>MemberCom Dao JMS Configuration</description>
+
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616" />
+				<property name="closeTimeout" value="60000" />
+				<property name="optimizedAckScheduledAckInterval" value="10000" />
+			</bean>
+		</property>
+		<property name="maxConnections" value="100"></property>
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+
+
+	<bean id="memberDetailDaoQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>member_detail_dao_queue</value>
+		</constructor-arg>
+	</bean>
+	<bean id="memberSummaryDaoQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>member_summary_dao_queue</value>
+		</constructor-arg>
+	</bean>
+	<bean id="memberLicenseDaoQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>member_license_dao_queue</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="memberDetailContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="memberDetailDaoQueue" />
+		<property name="messageListener" ref="memberDetailSessionListener" />
+	</bean>
+	<bean id="memberSummaryContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="memberSummaryDaoQueue" />
+		<property name="messageListener" ref="memberSummarySessionListener" />
+	</bean>
+	<bean id="memberLicenseContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="memberLicenseDaoQueue" />
+		<property name="messageListener" ref="memberLicenseSessionListener" />
+	</bean>
+
+</beans>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <description>Personal Pay Dao JMS Configuration</description>
+	
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616" />
+				<property name="closeTimeout" value="60000" />
+				<property name="optimizedAckScheduledAckInterval" value="10000" />
+			</bean>
+		</property>
+		<property name="maxConnections" value="100"></property>
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+
+
+	<bean id="pushQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>push_queue</value>
+		</constructor-arg>
+	</bean>
+
+	
+	<bean id="pushControllerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="pushQueue" />
+		<property name="messageListener" ref="pushControllerListener" />
+	</bean>
+
+
+</beans>

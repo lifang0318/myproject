@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<description>Member Service RMI Configuration</description>
+
+	<bean id="registry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean">
+		<property name="port" value="10098" />
+	</bean>
+
+	<!-- spring rmi service -->
+	<bean id="memberSummaryDaoExporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="memberSummaryDaoSession" />
+		<property name="serviceName" value="memberSummaryDaoSessionRmi" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.dao.rmi.IMemberSummaryDaoSession" />
+		<property name="registry" ref="registry" />
+	</bean>
+
+	<!-- spring rmi service -->
+	<bean id="memberDetailDaoExporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="memberDetailDaoSession" />
+		<property name="serviceName" value="memberDetailDaoSessionRmi" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.dao.rmi.IMemberDetailDaoSession" />
+		<property name="registry" ref="registry" />
+	</bean>
+	<!-- spring rmi service -->
+	<bean id="memberLicenseDaoExporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="memberLicenseDaoSession" />
+		<property name="serviceName" value="memberLicenseDaoSessionRmi" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.dao.rmi.IMemberLicenseDaoSession" />
+		<property name="registry" ref="registry" />
+	</bean>
+</beans>

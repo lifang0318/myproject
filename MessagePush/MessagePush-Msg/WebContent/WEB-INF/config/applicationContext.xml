@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/cache
+	    http://www.springframework.org/schema/cache/spring-cache-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>Message Push Service Spring Configuration</description>
+
+	<context:component-scan base-package="com.renlink.push.msg" />
+
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>/WEB-INF/config/service.properties</value>
+		</property>
+		<property name="fileEncoding" value="utf-8" />
+	</bean>
+
+	<!-- <cache:annotation-driven cache-manager="cacheManager" />
+
+	<bean id="cacheManagerFactory"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="/WEB-INF/config/ehcache.xml" />
+	</bean>
+
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="cacheManagerFactory" />
+	</bean> -->
+
+	<bean id="jPushAdapter" class="com.renlink.push.msg.adapter.JPushAdapter"
+		scope="prototype">
+		<property name="masterSecret" value="1fa3c355b2fd7c0a6daecf5b" />
+		<property name="appKey" value="e52a28ba64170b421a9c1d65" />
+	</bean>
+
+	<bean id="pushAdapterFactory" class="com.renlink.push.msg.adapter.PushAdapterFactoryBean">
+		<property name="pushAdapter" ref="jPushAdapter" />
+	</bean>
+
+
+</beans>

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Built-By: bruce.y.huang
+Class-Path: spring-web-4.2.0.RELEASE.jar spring-aop-4.2.0.RELEASE.jar 
+ aopalliance-1.0.jar spring-beans-4.2.0.RELEASE.jar spring-core-4.2.0.
+ RELEASE.jar commons-logging-1.2.jar spring-context-4.2.0.RELEASE.jar 
+ spring-expression-4.2.0.RELEASE.jar spring-tx-4.2.0.RELEASE.jar sprin
+ g-jdbc-4.2.0.RELEASE.jar spring-jms-4.2.0.RELEASE.jar spring-messagin
+ g-4.2.0.RELEASE.jar druid-1.0.14.jar fastjson-1.2.6.jar slf4j-api-1.7
+ .12.jar javaee-api-7.0.jar javax.mail-1.5.0.jar activation-1.1.jar my
+ batis-spring-1.2.3.jar mybatis-3.3.0.jar mysql-connector-java-5.1.35.
+ jar log4j-1.2.17.jar commons-beanutils-core-1.8.3.jar commons-pool-1.
+ 6.jar activemq-all-5.11.1.jar transactions-api-4.0.0M4.jar atomikos-u
+ til-4.0.0M4.jar transactions-jta-4.0.0M4.jar transactions-4.0.0M4.jar
+  transactions-jdbc-4.0.0M4.jar jta-1.1.jar
+Build-Jdk: 1.8.0_31
+Created-By: Maven Integration for Eclipse
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/cache
+	    http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
+	    http://www.springframework.org/schema/mvc        
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>Smart API Configuration</description>
+
+
+	<context:component-scan base-package="com.rareboom.member.api" />
+	<!-- 启用EhCache -->
+	<!-- <cache:annotation-driven cache-manager="cacheManager" /> <bean id="cacheManagerFactory" 
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"> <property 
+		name="configLocation" value="classpath:WEB-INF/config/ehcache.xml" /> </bean> 
+		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"> 
+		<property name="cache-manager-ref" value="cacheManagerFactory" /> </bean> -->
+   <!-- 登录服务 -->
+	<bean name="/loginService"
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>
+	<!-- 注册服务 -->
+    <bean name="/registerService"
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>
+    
+    <!-- 查询服务 -->
+    <bean name="/findService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="memberFindController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberFindController" />
+	</bean>  
+    
+    <!-- 更新会员信息服务 -->
+    <bean name="/updateMemberService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>  
+    
+    <!-- 添加memberLicense服务 -->
+    <bean name="/addMemberLicenseService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>
+	
+	<!-- 更新memberLicense服务 -->
+	<bean name="/updateMemberLicenseService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>
+	<!-- 上传头像服务 -->
+	<bean name="/uploadHeadImageService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="memberManagerController" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.api.IMemberManagerController" />
+	</bean>
+</beans>

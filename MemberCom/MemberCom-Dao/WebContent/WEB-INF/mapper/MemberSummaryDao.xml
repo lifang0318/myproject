@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rareboom.member.dao.IMemberSummaryDao">
+	<resultMap id="memberSummaryResult" type="com.rareboom.member.dao.entity.MemberSummary">
+		<id property="memberId" column="member_id" />
+		<result property="memberAccount" column="member_account" />
+		<result property="loginPassword" column="login_password" />
+		<result property="memberStatus" column="member_status" />
+		<result property="statusName" column="status_name" />
+		<result property="memberType" column="member_type" />
+		<result property="typeName" column="type_name" />
+		<result property="headImage" column="head_image" />
+		<result property="nickName" column="nick_name" />
+		<result property="memberName" column="member_name" />
+		<result property="memberPhone" column="member_phone" />
+		<result property="memberMail" column="member_mail" />
+		<result property="registerTime" column="register_time" />
+		<result property="registerDate" column="register_date" />
+		<result property="registerLocation" column="register_location" />
+		<result property="validTime" column="valid_time" />
+		<result property="lastLoginDate" column="last_login_date" />
+		<result property="lastLoginTime" column="last_login_time" />
+		<result property="token" column="token" />
+	</resultMap>
+
+	<resultMap id="resultOfInteger" type="java.lang.Integer">
+		<result column="COUNT" property="COUNT" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="memberSummaryAllColumns">
+		a.member_id,
+		a.member_account,
+		a.login_password,
+		a.member_status,
+		a.status_name,
+		a.member_type,
+		a.type_name,
+		a.head_image,
+		a.nick_name,
+		a.member_name,
+		a.member_phone,
+		a.member_mail,
+		a.register_time,
+		a.register_date,
+		a.register_location,
+		a.valid_time,
+		a.last_login_date,
+		a.last_login_time,
+		a.token
+	</sql>
+
+	<sql id="memberSummaryBaseColumns">
+		a.member_id,
+		a.member_status,
+		a.status_name,
+		a.member_type,
+		a.type_name,
+		a.member_name,
+		a.member_phone,
+		a.member_mail
+	</sql>
+
+	<select id="get" resultMap="memberSummaryResult" parameterType="java.lang.String">
+		SELECT
+		<include refid="memberSummaryAllColumns"></include>
+		FROM tb_member_summary a
+		<where> a.member_id = #{id} </where>
+	</select>
+
+	<select id="findCount"
+		parameterType="com.rareboom.member.dao.lang.MemberSummaryFindCondition"
+		resultMap="resultOfInteger">
+		SELECT count(*) AS COUNT FROM tb_member_summary a
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+
+			<if test="memberAccount !=null and memberAccount != '' ">
+				a.member_account = #{memberAccount}
+			</if>
+			<if test="memberPhone !=null and memberPhone != '' ">
+				AND a.member_phone = #{memberPhone}
+			</if>
+			<if test="memberMail !=null and memberMail != '' ">
+				AND a.member_mail = #{memberMail}
+			</if>
+			<if test="memberStatus != null and memberStatus != '' ">
+				a.member_status = #{memberStatus}
+			</if>
+			<if test="memberType != null and memberType != '' ">
+				AND a.member_type = #{memberType}
+			</if>    
+			<if test="registerLocation != null and registerLocation != '' ">
+				AND a.register_location = #{registerLocation}
+			</if>
+		</trim>
+	</select>
+
+	<select id="findList" resultMap="memberSummaryResult"
+		parameterType="com.rareboom.member.dao.lang.MemberSummaryFindCondition">
+		SELECT
+		<include refid="memberSummaryAllColumns" />
+		FROM tb_member_summary a
+		<trim prefix="WHERE" prefixOverrides="AND|OR"> 
+			<if test="memberAccount !=null and memberAccount != '' ">
+				a.member_account = #{memberAccount}
+			</if>
+			<if test="memberPhone !=null and memberPhone != '' ">
+				AND a.member_phone = #{memberPhone}
+			</if>
+			<if test="memberMail !=null and memberMail != '' ">
+				AND a.member_mail = #{memberMail}
+			</if>
+			<if test="memberStatus != null and memberStatus != '' ">
+				AND a.member_status = #{memberStatus}
+			</if>
+			<if test="memberType != null and memberType != '' ">
+				AND a.member_type = #{memberType}
+			</if>
+			<if test="registerLocation != null and registerLocation != '' ">
+				AND a.register_location = #{registerLocation}
+			</if>
+			<if test="password != null and password != '' ">
+				AND a.login_password= #{password}
+			</if>
+		</trim>
+	</select>
+	<select id="findCustomColumnsList"
+		parameterType="com.rareboom.member.dao.lang.MemberSummaryFindCondition"
+		resultMap="memberSummaryResult">
+		SELECT
+		<include refid="memberSummaryBaseColumns"></include>
+		FROM tb_member_summary a
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="memberStatus != null and memberStatus != '' ">
+				a.member_status = #{memberStatus}
+			</if>
+			<if test="memberType != null and memberType != '' ">
+				AND a.member_type = #{memberType}
+			</if>
+			<if test="registerLocation != null and registerLocation != '' ">
+				AND a.register_location = #{registerLocation}
+			</if>
+		</trim>
+	</select>
+	<update id="update" parameterType="com.rareboom.member.dao.entity.MemberSummary">
+		UPDATE tb_member_summary
+		<set>
+			<if test="loginPassword != null and loginPassword != '' ">
+				login_password = #{loginPassword},
+			</if>
+			<if test="memberStatus != null and memberStatus != '' ">
+				member_status = #{memberStatus},
+			</if>
+			<if test="statusName != null and statusName != '' ">
+				status_name = #{statusName},
+			</if>
+			<if test="memberType != null and memberType != '' ">
+				member_Type = #{memberType},
+			</if>
+			<if test="typeName != null and typeName != '' ">
+				type_name= #{typeName},
+			</if>
+			<if test="headImage != null and headImage != '' ">
+				head_image = #{headImage},
+			</if>
+			<if test="nickName != null and nickName != '' ">
+				nick_name = #{nickName},
+			</if>
+			<if test="memberName !=null and memberName != '' ">
+				member_name = #{memberName},
+			</if>
+			<if test="memberPhone != null and memberPhone != '' ">
+				member_phone= #{memberPhone},
+			</if>
+			<if test="memberMail != null and memberMail != '' ">
+				member_mail = #{memberMail},
+			</if>
+			<if test="registerTime !=null ">
+				register_time = #{registerTime},
+			</if>
+			<if test="registerDate !=null ">
+				register_date= #{registerDate},
+			</if>
+			<if test="registerLocation != null and registerLocation != '' ">
+				register_location = #{registerLocation},
+			</if>
+			<if test="validTime != null">
+				valid_time = #{validTime},
+			</if>
+			<if test="lastLoginDate !=null">
+				last_login_date= #{lastLoginDate},
+			</if>
+			<if test="lastLoginTime !=null">
+				last_login_time = #{lastLoginTime},
+			</if>
+			<if test="token !=null and token != '' ">
+				token = #{token}
+			</if>
+		</set>
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="memberId != null and memberId != ''">
+				member_id = #{memberId}
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				AND member_account = #{memberAccount}
+			</if>
+		</trim>
+	</update>
+
+	<insert id="insert" parameterType="com.rareboom.member.dao.entity.MemberSummary">
+		INSERT INTO
+		tb_member_summary(
+		member_id,
+		member_account,
+		login_password,
+		member_status,
+		status_name,
+		member_type,
+		type_name,
+		head_image,
+		nick_name,
+		member_name,
+		member_phone,
+		member_mail,
+		register_time,
+		register_date,
+		register_location,
+		valid_time,
+		last_login_date,
+		last_login_time,
+		token
+		) VALUES (
+		#{memberId},
+		#{memberAccount},
+		#{loginPassword},
+		#{memberStatus},
+		#{statusName},
+		#{memberType},
+		#{typeName},
+		#{headImage},
+		#{nickName},
+		#{memberName},
+		#{memberPhone},
+		#{memberMail},
+		#{registerTime},
+		#{registerDate},
+		#{registerLocation},
+		#{validTime},
+		#{lastLoginDate},
+		#{lastLoginTime},
+		#{token}
+		)
+	</insert>
+</mapper>
+

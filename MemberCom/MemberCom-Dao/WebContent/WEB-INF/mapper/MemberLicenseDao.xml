@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rareboom.member.dao.IMemberLicenseDao">
+	<resultMap id="memberLicenseResult" type="com.rareboom.member.dao.entity.MemberLicense">
+		<id property="memberAccount" column="member_account" />
+		<result property="memberName" column="member_name" />
+		<result property="enterpriseId" column="enterprise_id" />
+		<result property="enterpriseName" column="enterprise_name" />
+		<result property="createDate" column="create_date" />
+		<result property="createTime" column="create_time" />
+		<result property="licenseStatus" column="license_status" />
+		<result property="statusName" column="status_name" />
+		<result property="validTime" column="valid_time" />
+		<result property="token" column="token" />
+	</resultMap>
+
+	<resultMap id="resultOfInteger" type="java.lang.Integer">
+		<result column="COUNT" property="COUNT" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="memberLicenseAllColumns">
+		a.member_account,
+		a.member_name,
+		a.enterprise_id,
+		a.enterprise_name,
+		a.create_date,
+		a.create_time,
+		a.license_status,
+		a.status_name,
+		a.valid_time,
+		a.token
+	</sql>
+
+	<select id="get" resultMap="memberLicenseResult" parameterType="java.lang.String">
+		SELECT
+		<include refid="memberLicenseAllColumns"></include>
+		FROM tb_member_license a
+		<where>
+			a.member_account = #{account}
+		</where>
+	</select>
+
+	<select id="findCount"
+		parameterType="com.rareboom.member.dao.lang.MemberLicenseFindCondition"
+		resultMap="resultOfInteger">
+		SELECT count(*) AS COUNT FROM tb_member_license a
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="licenseStatus != null and licenseStatus != '' ">
+				a.license_status = #{licenseStatus}
+			</if>
+			<if test="enterpriseName != null and enterpriseName != '' ">
+				AND a.enterprise_name = #{enterpriseName }
+			</if>
+			<if test="enterpriseId != null and enterpriseId != '' ">
+				AND a.enterprise_id = #{enterpriseId}
+			</if>
+		</trim>
+	</select>
+
+	<select id="findList" resultMap="memberLicenseResult"
+		parameterType="com.rareboom.member.dao.lang.MemberLicenseFindCondition">
+		SELECT
+		<include refid="memberLicenseAllColumns" />
+		FROM tb_member_license a
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="memberAccount != null and memberAccount != '' ">
+				a.member_account = #{memberAccount}
+			</if>
+			<if test="licenseStatus != null and licenseStatus != '' ">
+				a.license_status = #{licenseStatus}
+			</if>
+			<if test="enterpriseName != null and enterpriseName != '' ">
+				AND a.enterprise_name = #{enterpriseName }
+			</if>
+			<if test="enterpriseId != null and enterpriseId != '' ">
+				AND a.enterprise_id = #{enterpriseId}
+			</if>
+		</trim>
+	</select>
+
+	<update id="update" parameterType="com.rareboom.member.dao.entity.MemberLicense">
+		UPDATE tb_member_license
+		<set>
+			<if test="memberName != null and memberName != '' ">
+				member_name = #{memberName},
+			</if>
+			<if test="enterpriseId != null and enterpriseId != '' ">
+				enterprise_id = #{enterpriseId},
+			</if>
+			<if test="enterpriseName != null and enterpriseName != '' ">
+				enterprise_name = #{enterpriseName},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate},
+			</if>
+			<if test="createTime != null">
+				create_time= #{createTime},
+			</if>
+			<if test="licenseStatus != null and licenseStatus != '' ">
+				license_status = #{licenseStatus},
+			</if>
+			<if test="statusName != null and statusName != '' ">
+				status_name = #{statusName },
+			</if>
+			<if test="validTime != null">
+				valid_time = #{validTime},
+			</if>
+			<if test="token != null and token != '' ">
+				token= #{token},
+			</if>
+		</set>
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="memberAccount != null">
+				member_account = #{memberAccount}
+			</if>
+		</trim>
+	</update>
+
+	<insert id="insert" parameterType="com.rareboom.member.dao.entity.MemberLicense">
+		INSERT INTO
+		tb_member_license(
+		member_account,
+		member_name,
+		enterprise_name,
+		enterprise_id,
+		create_date,
+		create_time,
+		license_status,
+		status_name,
+		valid_time,
+		token
+		) VALUES (
+		#{memberAccount},
+		#{memberName},
+		#{enterpriseName},
+		#{enterpriseId},
+		#{createDate},
+		#{createTime},
+		#{licenseStatus},
+		#{statusName},
+		#{validTime},
+		#{token}
+		)
+	</insert>
+</mapper>
+

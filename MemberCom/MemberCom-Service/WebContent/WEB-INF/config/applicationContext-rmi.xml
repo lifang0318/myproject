@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<description>Member Service RMI Configuration</description>
+
+	<bean id="registry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean">
+		<property name="port" value="10097" />
+	</bean>
+
+	<!-- spring rmi service -->
+	<bean id="memberManagerExporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="memberManagerService" />
+		<property name="serviceName" value="memberManagerServiceRmi" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.service.IMemberManagerService" />
+		<property name="registry" ref="registry" />
+	</bean>
+	<!-- spring rmi service -->
+	<bean id="memberFindExporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="service" ref="memberFindService" />
+		<property name="serviceName" value="memberFindRmi" />
+		<property name="serviceInterface"
+			value="com.rareboom.member.service.IMemberFindService" />
+		<property name="registry" ref="registry" />
+	</bean>
+</beans>
