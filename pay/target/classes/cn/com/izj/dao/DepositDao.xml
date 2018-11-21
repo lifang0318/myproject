@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.DepositDao">
+
+    <select id="getUserDeposit" resultType="cn.com.izj.base.entity.pay.Deposit">
+        select *
+        from deposit
+        where user_id = #{userId}
+    </select>
+
+    <select id="getDepositByOrderNum" resultType="cn.com.izj.base.entity.pay.Deposit">
+        select *
+        from deposit
+        where order_num = #{number}
+    </select>
+
+    <select id="getDepositSetting" resultType="cn.com.izj.base.entity.GlobalSetting">
+        select *
+        from global_setting
+        where unique_id = #{uniqueId} and field_state = 1
+    </select>
+
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.TripOrderDao">
+
+    <select id="findTripOrdersByCondition" resultType="cn.com.izj.dto.TripOrderResultDto"
+            parameterType="cn.com.izj.condition.TripOrderFindCondition">
+        SELECT t.*,m.name startParkName, n.name destinationParkName,c.plate_number
+        FROM trip_order t
+        JOIN park m ON t.start_park_id = m.id
+        JOIN park n ON t.destination_park_id = n.id
+        JOIN car_common_info c ON t.car_id = c.id
+        JOIN user u ON t.user_id = u.id
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id !=null and id != '' ">
+               AND id = #{id}
+            </if>
+            <if test="number !=null and number != '' ">
+                AND t.number = #{number}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="username != null and username != '' ">
+                AND u.username LIKE concat(concat('%',#{username}),'%')
+            </if>
+            <if test="carId != null and carId != '' ">
+                AND t.car_id = #{carId}
+            </if>
+            <if test="status != null ">
+                AND t.status = #{status}
+            </if>
+            <if test=" startTime != null ">
+                AND t.start_time &gt;= #{startTime}
+            </if>
+            <if test=" endTime != null ">
+                AND t.start_time &lt;= #{endTime}
+            </if>
+        </trim>
+        order by t.start_time desc
+    </select>
+
+
+    <select id="queryUnfinishedOrder" resultType="String">
+        select number
+        from trip_order
+        where user_id = #{userId} and status != 2
+        order by end_time asc
+        limit 1
+    </select>
+
+    <update id="updateDestinationPark" parameterType="cn.com.izj.dto.DestinationPark">
+        update trip_order
+        set destination_park_id = #{destinationParkId}
+        where number = #{orderNum}
+    </update>
+
+    <select id="getTripOrderByNum" resultType="cn.com.izj.dto.TripOrderResultDto">
+        select
+            t.*,
+            m.name startParkName,
+            n.name destinationParkName,
+            c.plate_number
+        from trip_order t
+            join park m on t.start_park_id = m.id
+            join park n on t.destination_park_id = n.id
+            join car_common_info c on t.car_id = c.id
+        where t.number = #{orderNum}
+    </select>
+
+    <update id="updateByOrderNum" parameterType="cn.com.izj.base.entity.order.TripOrder">
+        update trip_order
+        <trim prefix="set" suffixOverrides=",">
+            <if test="status != null and status !=  '' ">
+                status = #{status},
+            </if>
+            <if test="payType != null and payType != '' ">
+                pay_type = #{payType},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime},
+            </if>
+            <if test="url != null and url != '' ">
+                url = #{url},
+            </if>
+        </trim>
+        where number = #{number}
+    </update>
+
+    <select id="getSettingInfo" resultType="cn.com.izj.base.entity.GlobalSetting">
+        select *
+        from global_setting
+        where unique_id = #{uniqueId} and field_state = 1
+        order by create_time desc
+        limit 1
+    </select>
+
+    <select id="getDiscountInfoById" resultType="cn.com.izj.base.entity.GlobalSetting">
+        select *
+        from global_setting
+        where id = #{discountId} and field_state = 1
+    </select>
+
+    <select id="queryOrdersByTimeRange" resultType="cn.com.izj.dto.TripOrderResultDto">
+        select
+            t.*,
+            m.name startParkName,
+            n.name destinationParkName,
+            c.plate_number
+        from trip_order t
+            join park m on t.start_park_id = m.id
+            join park n on t.destination_park_id = n.id
+            join car_common_info c on t.car_id = c.id
+        where t.user_id = #{userId}
+              and t.start_time >= #{start}
+              and t.start_time &lt;= #{end}
+    </select>
+
+    <select id="queryOrdersByPlateNum" resultType="cn.com.izj.dto.TripOrderResultDto">
+        select
+            t.*,
+            m.name startParkName,
+            n.name destinationParkName,
+            c.plate_number
+        from trip_order t
+            join park m on t.start_park_id = m.id
+            join park n on t.destination_park_id = n.id
+            join car_common_info c on t.car_id = c.id
+        where c.plate_number like concat('%', #{plateNumber}, '%')
+    </select>
+    <select id="getUserInfo" resultType="cn.com.izj.base.entity.UserAuthInfo">
+        SELECT
+            u.id                           AS userId,
+            u.username                     AS username,
+            ifnull(d.pay_state, 0)         AS depositState,
+            ua.real_name_auth_status       AS idCardState,
+            ua.driver_licence_auth_status  AS driverState,
+            (uf.balance + uf.give_balance) AS balance
+        FROM
+            user u
+            LEFT JOIN user_auth ua ON u.id = ua.user_id
+            LEFT JOIN user_fund uf ON u.id = uf.user_id
+            LEFT JOIN deposit d ON u.id = d.user_id
+        WHERE u.id = #{userId}
+    </select>
+
+    <select id="queryUserOrder" resultType="String">
+        select number
+        from trip_order
+        where user_id = #{userId} and to_days(end_time) + 30 > to_days(now())
+        order by end_time desc
+        limit 1
+    </select>
+</mapper>

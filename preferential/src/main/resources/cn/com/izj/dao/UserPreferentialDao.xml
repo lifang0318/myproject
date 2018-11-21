@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.UserPreferentialDao">
+
+    <insert id="batchInsertUserPreferential" parameterType="java.util.List">
+        insert into user_preferential (user_id,preferential_id,distribute_time,state,discription)
+        values
+        <foreach collection="userPreferentials" item="item" index="index" separator=",">
+            (
+            #{item.userId,jdbcType=BIGINT},
+            #{item.preferentialId,jdbcType=BIGINT},
+            now(),
+            #{item.state,jdbcType=TINYINT},
+            #{item.discription,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <select id="findByCondition" resultType="java.util.Map">
+        select
+        up.discription,
+        up.create_time,
+        p.preferential_amount,
+        p.type,
+        up.distribute_time,
+        up.user_id,
+        up.preferential_id,
+        p.name,
+        up.id,
+        up.state,
+        p.validity
+        from user_preferential up
+        left join preferential p on p.id = up.preferential_id
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test=" id !=null and id != '' ">
+                and up.id = #{id}
+            </if>
+            <if test=" userId !=null and userId != '' ">
+                and up.user_id = #{userId}
+            </if>
+            <if test=" userId !=null and userId != '' and state == null">
+                and up.state = 0 and to_days(up.distribute_time) + p.validity > to_days(now())
+            </if>
+            <if test=" state != null ">
+                and up.state = #{state}
+            </if>
+        </trim>
+        order by p.preferential_amount desc, (up.distribute_time+p.validity) asc
+    </select>
+
+    <select id="findUnUsePreferential" resultType="java.util.Map">
+        select
+                t.discription,
+                t.create_time,
+                s.preferential_amount,
+                s.type,
+                t.distribute_time,
+                t.user_id,
+                t.preferential_id,
+                s.name,
+                t.id,
+                t.state,
+                s.validity
+        from user_preferential t
+            left join preferential s on t.preferential_id = s.id
+        where t.user_id = #{userId}
+              and t.state = #{state}
+              and <![CDATA[ to_days(now()) - to_days(t.distribute_time) < s.validity and
+              to_days(now()) - to_days(t.distribute_time) >= 0 ]]>
+            order by s.preferential_amount desc, (t.distribute_time + s.validity) asc
+    </select>
+
+    <select id="getUserPreferential" parameterType="cn.com.izj.dto.UserPreferentialCondition" resultType="Integer">
+        select p.preferential_amount
+        from user_preferential up left join preferential p on up.preferential_id = p.id
+        where up.user_id = #{userId} and up.id = #{id}
+    </select>
+
+    <insert id="insertUserAuth">
+        insert into user_auth (user_id, real_name_auth_status, driver_licence_auth_status, create_time)
+        values (#{userId}, 0, 0, now())
+    </insert>
+
+    <insert id="insertUserFund">
+        insert into user_fund (user_id, balance, give_balance, create_time)
+        values (#{userId}, 0, 0, now())
+    </insert>
+
+    <select id="getUserReferral" resultType="cn.com.izj.entity.User">
+        select *
+        from user u1
+        where u1.username = (select u2.referral
+                             from user u2
+                             where u2.id = #{userId})
+    </select>
+
+    <update id="updatePreferentialState" parameterType="cn.com.izj.base.entity.preferential.UserPreferential">
+        update user_preferential
+        set state = 1
+        where id = #{id}
+    </update>
+</mapper>

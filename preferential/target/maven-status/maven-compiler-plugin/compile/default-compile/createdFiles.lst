@@ -1,0 +1,11 @@
+cn\com\izj\controller\system\PreferentialSysController.class
+cn\com\izj\dto\PreferentialBean.class
+cn\com\izj\controller\mobile\PrefentialMobileController.class
+cn\com\izj\dao\PreferentialDao.class
+cn\com\izj\service\UserPreferentialService.class
+cn\com\izj\dao\UserPreferentialDao.class
+cn\com\izj\dto\UserPreferentialInsertBean.class
+cn\com\izj\dto\PreferentialCondition.class
+cn\com\izj\event\UserRegisterListener.class
+cn\com\izj\service\PreferentialService.class
+cn\com\izj\dto\UserPreferentialCondition.class

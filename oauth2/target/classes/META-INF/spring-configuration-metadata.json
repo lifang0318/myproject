@@ -1,0 +1,22 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "cn.com.izj.properties.SecurityProperties",
+      "name": "app.security",
+      "type": "cn.com.izj.properties.SecurityProperties"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "cn.com.izj.properties.SecurityProperties",
+      "name": "app.security.code",
+      "type": "cn.com.izj.properties.ValidateCodeProperties"
+    },
+    {
+      "sourceType": "cn.com.izj.properties.SecurityProperties",
+      "name": "app.security.oauth2",
+      "type": "cn.com.izj.properties.OAuth2Properties"
+    }
+  ]
+}

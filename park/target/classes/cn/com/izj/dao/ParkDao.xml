@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.ParkDao">
+
+    <!-- <insert id="save" parameterType="cn.com.izj.base.entity.park.Park">
+         insert into park (id, user_id,longitude,latitude,create_Time,update_time)
+         values (#{id}, #{userId},#{longitude}, #{latitude},#{createTime},#{updateTime})
+     </insert>-->
+
+    <!-- 获取停车场相关信息(停车场地址、车位总数、可用车辆数、剩余停车位数量) -->
+    <select id="findRelativeParks" resultType="cn.com.izj.dto.RelativePark">
+      select
+            p.id,
+            p.name,
+            p.address,
+            p.longitude,
+            p.latitude,
+            p.park_count_balance,
+            count(s.id) valid_car_count
+        from park p
+            left join car_dynamic_info d on d.park_id = p.id
+            left join car_common_info s on s.id = d.id and s.car_state = 2
+        where p.status = 1
+        group by p.id
+    </select>
+
+    <select id="getParkId" resultType="long">
+        select id
+        from park
+        where longitude = #{lng} and latitude = #{lat}
+    </select>
+
+
+    <select id="getParkList" resultType="cn.com.izj.base.entity.LocationPoint">
+        select id as parkId, name as parkName, latitude,longitude from park where status = 1
+    </select>
+
+    <select id="findParksByManager" resultType="cn.com.izj.base.entity.park.Park">
+        select *  from park where manager = #{manager}
+    </select>
+</mapper>

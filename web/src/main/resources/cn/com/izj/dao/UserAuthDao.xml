@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.UserAuthDao">
+
+    <update id="updateIdCardInfo" parameterType="cn.com.izj.dto.IdCardInfo">
+        update user_auth
+        set real_name                  = #{realName},
+            identity_card_number       = #{identityCardNumber},
+            hand_card_photo            = #{handCardPhoto},
+            identity_card_photo_front  = #{identityCardPhotoFront},
+            identity_card_photo_behind = #{identityCardPhotoBehind},
+            real_name_auth_status      = #{realNameAuthStatus}
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateDriverCardInfo" parameterType="cn.com.izj.dto.DriverCardInfo">
+        update user_auth
+        set driver_licence_photo_master = #{driverLicencePhotoMaster},
+            driver_licence_photo_slave  = #{driverLicencePhotoSlave},
+            driver_licence_auth_status  = #{driverLicenceAuthStatus}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getIdCardInfo" resultType="cn.com.izj.dto.IdCardInfo">
+        select
+            real_name,
+            identity_card_number,
+            hand_card_photo,
+            identity_card_photo_front,
+            identity_card_photo_behind,
+            real_name_auth_status
+        from user_auth
+        where user_id = #{userId}
+    </select>
+
+    <select id="getDriverCardInfo" resultType="cn.com.izj.dto.DriverCardInfo">
+        select
+            driver_licence_photo_master,
+            driver_licence_photo_slave,
+            driver_licence_auth_status
+        from user_auth
+        where user_id = #{userId}
+    </select>
+
+    <update id="updateCardInfo" parameterType="cn.com.izj.base.entity.UserAuth">
+        update user_auth
+        <trim prefix="set" suffixOverrides=",">
+            <if test="realNameAuthStatus != null and realNameAuthStatus !=  '' ">
+                real_name_auth_status = #{realNameAuthStatus},
+            </if>
+            <if test="cardRemark != null and cardRemark != '' ">
+                card_remark = #{cardRemark},
+            </if>
+            <if test="driverRemark != null and driverRemark != '' ">
+                driver_remark = #{driverRemark},
+            </if>
+            <if test="driverLicenceAuthStatus != null and driverLicenceAuthStatus != '' ">
+                driver_licence_auth_status = #{driverLicenceAuthStatus},
+            </if>
+            <if test="auditorId != null and auditorId != '' ">
+                auditor_id = #{auditorId},
+            </if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <select id="getUserAuthByUserId" resultType="cn.com.izj.base.entity.UserAuth">
+        select *
+        from user_auth
+        where user_id = #{userId}
+    </select>
+
+    <select id="getUserInfo" resultType="cn.com.izj.base.entity.UserAuthInfo">
+        SELECT
+            u.id                           AS userId,
+            u.username                     AS username,
+            ua.real_name                   AS realName,
+            ua.identity_card_number        AS cardNumber,
+            ifnull(pay_state, 0)           AS depositState,
+            ua.real_name_auth_status       AS idCardState,
+            ua.driver_licence_auth_status  AS driverState,
+            uf.balance                     AS balance,
+            u.half_user                    AS halfUser,
+            ua.identity_card_photo_front   AS identityCardPhotoFront,
+            ua.hand_card_photo             AS handCardPhoto,
+            ua.identity_card_photo_behind  AS identityCardPhotoBehind,
+            ua.driver_licence_photo_master AS driverLicencePhotoMaster,
+            ua.driver_licence_photo_slave  AS driverLicencePhotoSlave,
+            uf.give_balance                AS giveBalance
+        FROM
+            user u
+            LEFT JOIN user_auth ua ON u.id = ua.user_id
+            LEFT JOIN user_fund uf ON u.id = uf.user_id
+            LEFT JOIN deposit d ON u.id = d.user_id
+        WHERE u.id = #{userId}
+    </select>
+
+    <select id="getUserInfoByCardId" resultType="cn.com.izj.base.entity.UserAuth">
+        select *
+        from user_auth
+        where identity_card_number = #{cardId}
+    </select>
+
+    <select id="getUserList" resultType="cn.com.izj.base.entity.UserAuthInfo"
+            parameterType="cn.com.izj.dto.QueryCondition">
+        SELECT
+        u.id                              AS userId,
+        u.active                          AS state,
+        u.username                        AS username,
+        ifnull(pay_state, 0)              AS depositState,
+        ua.real_name_auth_status          AS idCardState,
+        ua.driver_licence_auth_status     AS driverState,
+        uf.balance                        AS balance,
+        u.created_time                    AS createTime,
+        ua.identity_card_number           AS cardNumber,
+        ua.real_name                      AS realName,
+        u.half_user                       AS halfUser,
+        ua.identity_card_photo_front      AS identityCardPhotoFront,
+        ua.hand_card_photo                AS handCardPhoto,
+        ua.identity_card_photo_behind     AS identityCardPhotoBehind,
+        ua.driver_licence_photo_master    AS driverLicencePhotoMaster,
+        ua.driver_licence_photo_slave     AS driverLicencePhotoSlave,
+        uf.give_balance                   AS giveBalance
+        FROM
+        user u
+        LEFT JOIN user_auth ua ON u.id = ua.user_id
+        LEFT JOIN user_fund uf ON u.id = uf.user_id
+        LEFT JOIN deposit d ON u.id = d.user_id
+        where 1=1
+            <if test="username !=null and username != '' ">
+              and u.username = #{username}
+            </if>
+            <if test="realName !=null and realName != '' ">
+              and ua.real_name = #{realName}
+            </if>
+            <if test="cardNumber !=null and cardNumber != '' ">
+              and ua.identity_card_number = #{cardNumber}
+            </if>
+            <if test="depositState != null and depositState == 0">
+              and d.pay_state != 2
+            </if>
+            <if test="depositState != null and depositState == 1 ">
+              and d.pay_state = 2
+            </if>
+            <if test="cardState != null and cardState == 2 ">
+            and ua.real_name_auth_status = 2
+            </if>
+            <if test="cardState != null and cardState == 1 ">
+            and ua.real_name_auth_status = 1
+            </if>
+            <if test="cardState != null and cardState != 2 and cardState != 1 ">
+              and ua.real_name_auth_status != 2
+            </if>
+            <if test="driverState != null and driverState != '' ">
+              and ua.driver_licence_auth_status = #{driverState}
+            </if>
+            <if test="halfUser != null and halfUser != ''">
+              and u.half_user = #{halfUser}
+            </if>
+            <if test=" beginDate != null">
+              and <![CDATA[ u.created_time >= #{beginDate} ]]>
+            </if>
+            <if test=" endDate != null">
+              and <![CDATA[ u.created_time <= #{endDate}]]>
+            </if>
+            order by u.created_time desc
+    </select>
+
+</mapper>

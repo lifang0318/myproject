@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.CarCommonDao">
+
+
+    <select id="getReservationList" resultType="cn.com.izj.dto.ShowCarInfo">
+        select
+            cc.id,
+            cc.plate_number,
+            cc.brand,
+            cc.seat_number,
+            cc.car_color,
+            cc.car_grade,
+            cc.car_type,
+            cgr.mileage_price,
+            cgr.time_fee,
+            cd.power,
+            cd.max_distance,
+            cd.park_id,
+            cd.park_name,
+            cd.park_address,
+            cd.target_park_name,
+            cd.device_id
+        from car_common_info cc
+            left join car_dynamic_info cd
+                on cc.id = cd.id
+            left join car_grade_rule cgr
+                on cc.car_grade = cgr.car_grade
+        where cc.car_state = 2 and cd.park_id = #{parkId}
+    </select>
+
+    <select id="getCarInfoById" resultType="cn.com.izj.dto.ShowCarInfo">
+        select
+            cc.id,
+            cc.plate_number,
+            cc.brand,
+            cc.seat_number,
+            cc.car_color,
+            cc.car_grade,
+            cc.car_type,
+            cgr.mileage_price,
+            cgr.time_fee,
+            cd.power,
+            cd.max_distance,
+            cd.park_id,
+            cd.park_name,
+            cd.park_address,
+            cd.target_park_name,
+            cd.device_id
+        from car_common_info cc
+            left join car_dynamic_info cd
+                on cc.id = cd.id
+            left join car_grade_rule cgr
+                on cc.car_grade = cgr.car_grade
+        where cc.id = #{id}
+    </select>
+
+    <select id="queryByPlateNumber" resultType="cn.com.izj.base.entity.car.CarCommonInfo">
+        select *
+        from car_common_info
+        where plate_number = #{plateNumber}
+
+    </select>
+
+    <select id="getMyCarList" resultType="cn.com.izj.dto.MyCarInfo">
+        select
+            cc.id,
+            cc.plate_number,
+            cc.brand,
+            cc.seat_number,
+            cc.car_color,
+            cc.car_grade,
+            cc.car_type,
+            cc.car_state,
+            cgr.mileage_price,
+            cgr.time_fee,
+            cd.power,
+            cd.max_distance,
+            cd.park_id,
+            cd.park_name,
+            cd.park_address,
+            cd.target_park_name,
+            sum(tt.owner_earn_amount) as sumAmount
+        from car_common_info cc
+            left join car_dynamic_info cd
+                on cc.id = cd.id
+            left join car_grade_rule cgr
+                on cc.car_grade = cgr.car_grade
+            left join trip_order tt
+                on cc.id = tt.car_id
+        where cc.owner_id = #{userId} and cc.car_state != 7
+        group by cc.id
+    </select>
+
+    <select id="getCarIdByDeviceId" resultType="cn.com.izj.base.entity.car.CarCommonInfo">
+        select
+            c2.id           AS id,
+            c2.plate_number AS plateNumber,
+            c2.brand        AS brand,
+            c2.seat_number  AS seatNumber,
+            c2.car_color    AS carColor,
+            c2.car_state    as carState,
+            c2.car_type     as carType,
+            c2.owner_id     AS ownerId
+        from car_common_info c2
+            left join car_dynamic_info c1 on c1.id = c2.id
+        where c1.device_id = #{deviceId}
+    </select>
+
+    <select id="getParkInfo" resultType="cn.com.izj.base.entity.LocationPoint">
+        select
+            name    as parkName,
+            address as park_address
+        from park
+        where id = #{parkId}
+    </select>
+
+    <select id="getCarList" resultType="cn.com.izj.dto.ShowCarInfo" parameterType="cn.com.izj.dto.QueryCarCondition">
+        select
+        cc.id,
+        cc.car_state,
+        cc.plate_number,
+        cc.brand,
+        cc.seat_number,
+        cc.car_color,
+        cc.car_grade,
+        cc.car_type,
+        cgr.mileage_price,
+        cgr.time_fee,
+        cd.power,
+        cd.max_distance,
+        cd.park_id,
+        cd.park_name,
+        cd.park_address,
+        cd.target_park_name,
+        cd.device_id
+        from car_common_info cc
+        left join car_dynamic_info cd
+        on cc.id = cd.id
+        left join car_grade_rule cgr
+        on cc.car_grade = cgr.car_grade
+        where cc.car_state != 7
+        <if test="plateNumber !=null and plateNumber != '' ">
+            and cc.plate_number = #{plateNumber}
+        </if>
+        <if test="powerType !=null and powerType != '' ">
+            and cd.power = #{powerType}
+        </if>
+        <if test="carGrade !=null and carGrade != '' ">
+            and cc.car_grade = #{carGrade}
+        </if>
+        <if test="carState != null and carState != ''">
+            and cc.car_state = #{carState}
+        </if>
+    </select>
+
+    <update id="updateReservationCarState">
+        update car_common_info cc
+        set cc.car_state = #{state}, cc.update_time = now()
+        where cc.id = (select rr.car_id
+                       from reservation_car rr
+                       where rr.id = #{id} and rr.reservation_state = 0)
+    </update>
+
+    <update id="updateCarState" parameterType="cn.com.izj.base.entity.car.CarCommonInfo">
+        update car_common_info
+        set car_state = #{carState}, update_time = #{updateTime}
+        where id = #{id} and car_state = 2
+    </update>
+
+    <select id="findParkCountBalance" resultType="Integer">
+        select park_count_balance from park where id = #{parkId}
+    </select>
+
+    <update id="updateParkCount">
+        update park set park_count_balance = (park_count_balance - 1) where id = #{parkId}
+    </update>
+</mapper>

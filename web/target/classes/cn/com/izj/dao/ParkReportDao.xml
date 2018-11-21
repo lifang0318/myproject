@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.ParkReportDao">
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into park (
+        id,
+        user_id,
+        name,
+        type,
+        longitude,
+        latitude,
+        manager,
+        cost_type,
+        price,
+        address,
+        status,
+        park_count,
+        park_count_balance,
+        create_time,
+        update_time
+        )values
+        <foreach collection="parks" item="item" index="index" separator=",">
+            (
+            #{item.id,jdbcType=BIGINT},
+            #{item.userId,jdbcType=BIGINT},
+            #{item.name,jdbcType=VARCHAR},
+            #{item.type,jdbcType=TINYINT},
+            #{item.longitude,jdbcType=DECIMAL},
+            #{item.latitude,jdbcType=DECIMAL},
+            #{item.manager,jdbcType=VARCHAR},
+            #{item.costType,jdbcType=TINYINT},
+            #{item.price,jdbcType=INTEGER},
+            #{item.address,jdbcType=VARCHAR},
+            #{item.status,jdbcType=TINYINT},
+            0,
+            0,
+            now(),
+            now()
+            )
+        </foreach>
+    </insert>
+
+    <delete id="delParkByManage" parameterType="java.lang.String">
+      delete from park where  manager = #{manager}
+   </delete>
+
+
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.ReservationCarDao">
+
+    <select id="queryReservationByUserId" resultType="cn.com.izj.dto.ReturnReservationCar">
+        select
+            rc.id AS reservationId,
+            rc.user_id,
+            rc.create_time,
+            cc.id,
+            cc.plate_number,
+            cc.brand,
+            cc.car_color,
+            cd.power,
+            cc.seat_number,
+            cc.car_type,
+            cc.car_state,
+            p.name,
+            p.address,
+            p.latitude,
+            p.longitude
+        from reservation_car rc
+            left join car_dynamic_info cd on cd.id = rc.car_id
+            left join car_common_info cc on cc.id = rc.car_id
+            left join park p on p.id = rc.start_park_id
+        where rc.reservation_state = 0
+              and rc.user_id = #{userId}
+    </select>
+
+    <update id="updateUserReservation">
+        update reservation_car
+        set reservation_state = #{overtimeState}, update_time = now()
+        where user_id = #{userId} and reservation_state = 0
+    </update>
+</mapper>

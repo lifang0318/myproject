@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.UserFundDao">
+
+    <select id="selectUserFundByXLock" resultType="cn.com.izj.base.entity.pay.UserFund">
+        select *
+        from user_fund
+        where user_id = #{userId}
+    </select>
+
+    <update id="updateCarIncome">
+        update user_fund
+        set car_income = #{carIncome}, update_time = now()
+        where user_id = #{carOwnerId}
+
+    </update>
+
+    <select id="selectUserFundByUserId" resultType="cn.com.izj.base.entity.pay.UserFund">
+        select *
+        from user_fund
+        where user_id = #{userId}
+    </select>
+
+    <select id="getUserPreferentialAmount" resultType="Integer">
+        select count(*)
+        from user_preferential up
+            left join preferential p on up.preferential_id = p.id
+        where up.user_id = #{userId} and up.state = 0 and <![CDATA[DATEDIFF(NOW(), up.distribute_time) <= p.validity
+        ]]>
+    </select>
+
+    <select id="getWithdrawList" resultType="cn.com.izj.dto.ApplicationCash">
+        select
+            wd.drawal_amount AS cash,
+            wd.user_id       AS userId,
+            wd.create_time   AS createTime,
+            uf.real_name     AS realName,
+            uf.card_number   AS cardNumber,
+            wd.audit_state   AS auditState
+        from withdraw_deposit wd
+            left join user_fund uf on wd.user_id = uf.user_id
+        where audit_state = 0
+    </select>
+
+    <select id="getWithdrawInfo" resultType="cn.com.izj.dto.ApplicationCash">
+        select
+            wd.drawal_amount AS cash,
+            wd.user_id       AS userId,
+            wd.create_time   AS createTime,
+            uf.real_name     AS realName,
+            uf.card_number   AS cardNumber,
+            wd.audit_state   AS auditState
+        from withdraw_deposit wd
+            left join user_fund uf on wd.user_id = uf.user_id
+        where trade_number = #{tradeNumber}
+    </select>
+
+    <update id="updateWithdraw" parameterType="cn.com.izj.dto.ApplicationCash">
+        update withdraw_deposit
+        set audit_state = #{auditState}
+        where trade_number = #{tradeNumber} and user_id = #{userId}
+    </update>
+
+</mapper>

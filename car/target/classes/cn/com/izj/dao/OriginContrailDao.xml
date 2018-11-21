@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.izj.dao.OriginContrailDao">
+
+    <select id="findByTimeRange" resultType="cn.com.izj.base.entity.car.OriginContrail">
+        select *
+        from origin_contrail
+        where car_id = #{carId} and create_time &gt;= #{startTime} and create_time &lt;= #{endTime}
+        order by create_time asc
+    </select>
+
+    <select id="getLocationByCarId" resultType="cn.com.izj.base.entity.LocationPoint">
+        select
+            latitude,
+            longitude
+        from origin_contrail
+        where car_id = #{carId}
+        order by create_time desc
+        limit 1
+    </select>
+
+</mapper>
